@@ -1,0 +1,32 @@
+{
+  "name": "kaida",
+  "version": "1.0.0",
+  "bin": {
+    "kaida": "./dist/kaida.js"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --import tsx src/kaida.tsx",
+    "dev-test": "tsc && node dist/kaida.js",
+    "start": "node dist/kaida.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.1.2",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "axios": "^1.8.4",
+    "ink": "^5.2.0",
+    "meow": "^13.2.0",
+    "puppeteer": "^24.6.1",
+    "react": "^18.3.1",
+    "tsx": "^4.19.3"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler", // works great with `tsx` or `esbuild`
+    "lib": ["ES2022", "DOM"],
+    "jsx": "react", // ✅ for React 17+ JSX runtime
+    "types": ["node"],
+    "sourceMap": true,
+    "outDir": "./dist",
+    "declaration": false, // not needed unless you're publishing
+    "strict": true,
+    "noEmitOnError": true,
+    "skipLibCheck": true,
+    "useDefineForClassFields": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
