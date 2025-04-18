@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import UserInput from './components/UserInput';
 import { Box, render, Text } from 'ink';
-import scrape, { Torrent } from './scraper/torrent-scraper';
+import {scrape, Torrent } from './scraper/torrent-scraper';
 import Loader from './components/Loader';
 import Hero from './components/Hero';
 import Results from './components/Results';
@@ -13,6 +13,7 @@ const Search = () => {
       const [query, setQuery] = useState<string>('');
       const [torrents, setTorrents] = useState<Torrent[]>([]);
       const [isLoading, setIsLoading] = useState<boolean>(false);
+      const [selectedTorrent, setSelectedTorrent] = useState<Torrent>();
     
       const handleQuerySubmit = (userInput: string) => {
         setQuery(userInput);
@@ -42,10 +43,11 @@ const Search = () => {
             </Box>
           )}
           {/* Queried finished with results */}
-          {query && !isLoading && torrents.length > 0 && (
-              <Results torrents={torrents} onSelect={(torrent) => {
-                return <Download torrent={torrent}/>
-              }}/>
+          {query && !isLoading && torrents.length > 0 && !selectedTorrent &&  (
+              <Results torrents={torrents} onSelect={setSelectedTorrent}/>
+          )}
+          {selectedTorrent && (
+            <Download torrent={selectedTorrent}/>
           )}
         </Box>
         )

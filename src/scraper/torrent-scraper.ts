@@ -9,7 +9,7 @@ export interface Torrent {
     seeds: string
 }
 
-export default async function scrape(query: string): Promise<Torrent[]> {
+export const scrape = async (query: string): Promise<Torrent[]> => {
     const url = `https://thepiratebay.org/search.php?q=${encodeURIComponent(query)}&all=on&search=Pirate+Search&page=0&orderby=`;
     const browser = await puppeteer.launch({headless: true});
     const page = await browser.newPage();
