@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Text } from 'ink';
+import { Box, Text } from 'ink';
 
-const Loader = () => {
+type LoaderProps = {
+  pretext: string;
+}
+
+const Loader: React.FC<LoaderProps> = ({pretext}) => {
     const [wheel, setWheel] = useState<string>('-');
     
     useEffect(() => {
@@ -26,7 +30,9 @@ const Loader = () => {
       return () => clearInterval(interval);
     }, []);
   
-    return <Text>{wheel}</Text>
+    return (
+        <Text>{pretext} {wheel}</Text>
+  )
   };
   
 
