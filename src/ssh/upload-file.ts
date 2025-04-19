@@ -1,56 +1,54 @@
-import { Client } from "ssh2";
-import fs from 'fs';
-import path from 'path';
+import * as path from "path";
+import fs from 'fs-extra';
+import SftpClient from "ssh2-sftp-client";
+import { establishSFTPConnection } from "./sftp-connection";
 
-export const uploadFile = (sftpClient: Client, cachePath: string, remotePath: string) => {
-  console.log(`Uploading from cache: ${cachePath}`);
 
-  sftpClient.sftp((err, sftp) => {
-    if (err) {
-      console.error('Error opening SFTP session:', err);
-      return;
-    }
+async function ensureRemoteDirExists(sftp: SftpClient, remoteFolder: string) {
+  console.log('something 1')
+  const dirExists = await sftp.exists(remoteFolder);
+  console.log('something')
+  if (!dirExists) {
+      console.log(`Creating remote folder: ${remoteFolder}`);
+      await sftp.mkdir(remoteFolder, true); // Recursive create
+  } else {
+      console.log(`Remote folder ${remoteFolder} already exists.`);
+  }
+}
 
-    console.log("Established sftp ")
+export async function uploadFolderToSftp(localFolder: string, remoteFolder: string) {
 
-    // Read all files in the cache directory
-    fs.readdir(cachePath, (err, files) => {
-      if (err) {
-        console.error('Error reading cache directory:', err);
-        sftpClient.end();  // End the session if error reading the directory
-        return;
+  const sftp = await establishSFTPConnection();
+    try {
+      // Ensure the remote folder exists
+      await ensureRemoteDirExists(sftp, remoteFolder);
+
+
+      // Get the list of files in the local folder
+      const files = await fs.readdir(localFolder);
+
+      for (const file of files) {
+          const localFilePath = path.join(localFolder, file);
+          const remoteFilePath = path.join(remoteFolder, file);
+
+          const stats = await fs.stat(localFilePath);
+
+          if (stats.isDirectory()) {
+              // Recursively upload subfolders
+              await uploadFolderToSftp(localFilePath, remoteFilePath);
+          } else {
+              // Upload file
+              console.log(`Uploading ${localFilePath} to ${remoteFilePath}`);
+              await sftp.put(localFilePath, remoteFilePath);
+          }
       }
 
-      let filesUploaded = 0;
-      const totalFiles = files.length;
+      console.log("All files uploaded successfully.");
+  } catch (err) {
+      console.error("Error uploading files:", err);
+  } finally {
+      // Close the SFTP connection
+      await sftp.end();
+  }
 
-      // Loop over all files in the cache folder and upload them
-      files.forEach((file) => {
-        console.log('Cached file: ' + file)
-        const localFilePath = path.join(cachePath, file);
-        const remoteFilePath = path.join(remotePath, file);
-
-        // Create a writable stream to upload the file to the SFTP server
-        const writeStream = sftp.createWriteStream(remoteFilePath);
-
-        // Create a readable stream from the local file and pipe it to the SFTP write stream
-        fs.createReadStream(localFilePath).pipe(writeStream);
-
-        writeStream.on('close', () => {
-          console.log(`File ${file} uploaded successfully!`);
-          filesUploaded++;
-
-          // If all files have been uploaded, end the connection
-          if (filesUploaded === totalFiles) {
-            console.log("All files uploaded successfully.");
-            sftpClient.end();  // End the connection after uploading all files
-          }
-        });
-
-        writeStream.on('error', (err: Error) => {
-          console.error(`Error uploading file ${file}:`, err);
-        });
-      });
-    });
-  });
-};
+}

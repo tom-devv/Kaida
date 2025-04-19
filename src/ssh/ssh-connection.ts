@@ -1,7 +1,7 @@
 import { Client } from 'ssh2'; // Import the SSH2 client
 import fs from 'fs';
 
-export const establishSFTPConnection = (callback: () => void) => {
+export const establishSSHConnection =  (callback: () => void) => {
 
     const sshClient = new Client();
 

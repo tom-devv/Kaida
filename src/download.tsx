@@ -1,11 +1,14 @@
 import React from "react";
 import TorrentResult from "./components/TorrentResult";
 import { Torrent } from "./scraper/torrent-scraper";
-import { establishSFTPConnection } from "./ssh/ssh-connection";
+import { downloadTorrent } from "./scraper/download-torrent";
 
 const Download = ({torrent} : {torrent: Torrent}) => {
-    const sftpConnection = establishSFTPConnection((file) => {
 
+    const cachePath = "./cache";
+
+    downloadTorrent(torrent.magnet, cachePath).then((path) => {
+        console.log(path)
     })
     return (
         <TorrentResult torrent={torrent} flag={true} />
