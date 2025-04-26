@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 
 
-export interface Torrent {
+export interface FetchedTorrent {
     name: string;
     magnet: string;
     size: string;
@@ -9,14 +9,14 @@ export interface Torrent {
     seeds: string
 }
 
-export const scrape = async (query: string): Promise<Torrent[]> => {
+export const scrape = async (query: string): Promise<FetchedTorrent[]> => {
     const url = `https://thepiratebay.org/search.php?q=${encodeURIComponent(query)}&all=on&search=Pirate+Search&page=0&orderby=`;
     const browser = await puppeteer.launch({headless: true});
     const page = await browser.newPage();
 
     await page.goto(url)
 
-    const torrents: Torrent[] = await page.$$eval('ol#torrents > li.list-entry', (items) =>
+    const torrents: FetchedTorrent[] = await page.$$eval('ol#torrents > li.list-entry', (items) =>
         Array.from(items)
             .slice(0, 10) // Top 20 results
             .map((el) => {

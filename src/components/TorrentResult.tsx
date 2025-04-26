@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, Text } from "ink"
-import { Torrent } from "../scraper/torrent-scraper"
+import { FetchedTorrent } from "../scraper/torrent-scraper"
 
 const MAX_TITLE_LENGTH = 60;
 
@@ -13,7 +13,7 @@ const TorrentResult = ({
     torrent,
     flag,
     index}: {
-        torrent: Torrent,
+        torrent: FetchedTorrent,
         flag: boolean,
         index?: number
     }) => {

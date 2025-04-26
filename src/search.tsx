@@ -3,17 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import UserInput from './components/UserInput';
 import { Box, render, Text } from 'ink';
-import {scrape, Torrent } from './scraper/torrent-scraper';
-import Loader from './components/Loader';
+import {scrape, FetchedTorrent } from './scraper/torrent-scraper';
+import Loader from './components/loading/Loader';
 import Hero from './components/Hero';
 import Results from './components/Results';
 import Download from './download';
 
 const Search = () => {
       const [query, setQuery] = useState<string>('');
-      const [torrents, setTorrents] = useState<Torrent[]>([]);
+      const [torrents, setTorrents] = useState<FetchedTorrent[]>([]);
       const [isLoading, setIsLoading] = useState<boolean>(false);
-      const [selectedTorrent, setSelectedTorrent] = useState<Torrent>();
+      const [selectedTorrent, setSelectedTorrent] = useState<FetchedTorrent>();
     
       const handleQuerySubmit = (userInput: string) => {
         setQuery(userInput);
@@ -33,7 +33,7 @@ const Search = () => {
           {isLoading && (
             <Box borderStyle={'round'} width={50}>
               <Text>🔎 Searching </Text>
-              <Text color={'blue'}>{query}</Text>
+              <Text color={'blue'}>{query} </Text>
               <Loader pretext='' />
             </Box>
           )}

@@ -1,32 +1,41 @@
-import path from 'path';
-import WebTorrent from 'webtorrent';  // Import the webtorrent package
+import WebTorrent, { Torrent } from 'webtorrent';  // Import the webtorrent package
+
+export interface DownloadHandle {
+  /** resolves with the Torrent instance as soon as it’s added */
+  ready: Promise<Torrent>;
+  /** resolves with the download folder path once the torrent is done */
+  done: Promise<string>;
+}
 
 
-// Define a function to download the torrent locally
-export const downloadTorrent = (magnet: string, cachePath: string): Promise<string> => {
-    const client = new WebTorrent();
-  
-    console.log('Start downloading the torrent...');
-  
-    return new Promise<string>(() => {
-      // Add the torrent using the magnet link
-      client.add(magnet, { path: cachePath }, (torrent) => {
-        console.log(`Torrent added: ${torrent.infoHash}`);
-        console.log(`Torrent Size: ${torrent.timeRemaining}`)
-  
-        torrent.on('done', () => {
-          return torrent.path;
-        });
+/**
+ * Kick off a torrent download, but give you back two promises:
+ *  - ready  (fires immediately after client.add)
+ *  - done   (fires after the download completes)
+ */
+export function downloadTorrent(
+  magnet: string,
+  cachePath: string
+): DownloadHandle {
+  const client = new WebTorrent({utp: false});
 
-        torrent.on('metadata', () => {
-          const bytesPergb = 1024 ** 3;
-          console.log(`Size: ${torrent.length / bytesPergb}`)
-        })
-  
-        torrent.on('error', (err) => {
-          console.error('Error downloading torrent:', err);
-        });
-      });
+  const ready = new Promise<Torrent>((resolve, reject) => {
+    client.add(magnet, { path: cachePath }, (torrent) => {
+      resolve(torrent);
     });
-  };
-  
+    client.on('error', reject);
+  });
+
+  const done = ready.then(
+    (torrent) =>
+      new Promise<string>((resolve, reject) => {
+        torrent.on('done', () => {
+          console.log('done')
+          resolve(`${torrent.path}/${torrent.name}`)
+        });
+        torrent.on('error', reject);
+      })
+  );
+
+  return { ready, done };
+}

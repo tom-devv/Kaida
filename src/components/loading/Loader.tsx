@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Text } from 'ink';
+import { Text } from 'ink';
 
 type LoaderProps = {
-  pretext: string;
+  pretext?: string;
 }
 
 const Loader: React.FC<LoaderProps> = ({pretext}) => {
@@ -31,7 +31,7 @@ const Loader: React.FC<LoaderProps> = ({pretext}) => {
     }, []);
   
     return (
-        <Text>{pretext} {wheel}</Text>
+        <Text>{pretext}{wheel}</Text>
   )
   };
   

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Text, useInput } from 'ink';
-import { Torrent } from '../scraper/torrent-scraper';
+import { FetchedTorrent } from '../scraper/torrent-scraper';
 import TorrentResult from './TorrentResult';
 
 const chunk = <T,>(arr: T[], size: number): T[][] =>
@@ -12,8 +12,8 @@ const Results = ({
   torrents, 
   onSelect,
   }: {
-    torrents: Torrent[];
-    onSelect: (torrent: Torrent) => void  
+    torrents: FetchedTorrent[];
+    onSelect: (torrent: FetchedTorrent) => void  
   }) => {
 	const COLUMNS = 2;
 	const rows = chunk(torrents, COLUMNS);
